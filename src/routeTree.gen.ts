@@ -11,14 +11,28 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as MainDashboardImport } from './routes/main-dashboard'
 import { Route as IndexImport } from './routes/index'
+import { Route as MainDashboardNhoodImport } from './routes/main-dashboard.$nhood'
 
 // Create/Update Routes
+
+const MainDashboardRoute = MainDashboardImport.update({
+  id: '/main-dashboard',
+  path: '/main-dashboard',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const MainDashboardNhoodRoute = MainDashboardNhoodImport.update({
+  id: '/$nhood',
+  path: '/$nhood',
+  getParentRoute: () => MainDashboardRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -32,39 +46,73 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/main-dashboard': {
+      id: '/main-dashboard'
+      path: '/main-dashboard'
+      fullPath: '/main-dashboard'
+      preLoaderRoute: typeof MainDashboardImport
+      parentRoute: typeof rootRoute
+    }
+    '/main-dashboard/$nhood': {
+      id: '/main-dashboard/$nhood'
+      path: '/$nhood'
+      fullPath: '/main-dashboard/$nhood'
+      preLoaderRoute: typeof MainDashboardNhoodImport
+      parentRoute: typeof MainDashboardImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface MainDashboardRouteChildren {
+  MainDashboardNhoodRoute: typeof MainDashboardNhoodRoute
+}
+
+const MainDashboardRouteChildren: MainDashboardRouteChildren = {
+  MainDashboardNhoodRoute: MainDashboardNhoodRoute,
+}
+
+const MainDashboardRouteWithChildren = MainDashboardRoute._addFileChildren(
+  MainDashboardRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/main-dashboard': typeof MainDashboardRouteWithChildren
+  '/main-dashboard/$nhood': typeof MainDashboardNhoodRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/main-dashboard': typeof MainDashboardRouteWithChildren
+  '/main-dashboard/$nhood': typeof MainDashboardNhoodRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/main-dashboard': typeof MainDashboardRouteWithChildren
+  '/main-dashboard/$nhood': typeof MainDashboardNhoodRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/main-dashboard' | '/main-dashboard/$nhood'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/main-dashboard' | '/main-dashboard/$nhood'
+  id: '__root__' | '/' | '/main-dashboard' | '/main-dashboard/$nhood'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  MainDashboardRoute: typeof MainDashboardRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  MainDashboardRoute: MainDashboardRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +125,22 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/main-dashboard"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/main-dashboard": {
+      "filePath": "main-dashboard.tsx",
+      "children": [
+        "/main-dashboard/$nhood"
+      ]
+    },
+    "/main-dashboard/$nhood": {
+      "filePath": "main-dashboard.$nhood.tsx",
+      "parent": "/main-dashboard"
     }
   }
 }
