@@ -1,6 +1,7 @@
 import { useNeighborhoodData } from './components/getData';
 import LoadingSpinner from '../../../components/loading-spinner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import TotalCountWidget from './components/TotalCountWidget';
 
 interface BusinessData {
     uniqueid: string;
@@ -61,17 +62,11 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
     }
 
     return (
-        <div className="space-y-4 px-6">
+        <div className="space-y-4 px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <h1 className="text-2xl font-semibold">{neighborhood} Businesses</h1>
             <p className="text-gray-600">Total businesses: {data.length}</p>
             <p className='text-gray-600'>Unique NAIC codes: {uniqueNAICs.size}</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {data.map((business: BusinessData) => (
-                    <div key={business.uniqueid} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-                        <h3 className="font-semibold">{business.full_business_address}</h3>
-                    </div>
-                ))}
-            </div>
+            <TotalCountWidget count={data.length} />
         </div>
     );
 };
