@@ -1,50 +1,49 @@
-<img src="https://og.sznm.dev/api/generate?heading=vite-react-tailwind-starter&text=React+vite+template+with+TailwindCSS+and+TypeScript+setup.&template=color&center=true&height=330" />
+# San Francisco Business Dashboard
 
-This is a project bootstrapped with [`@vitejs/app`](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) (`react-ts`), added with [TailwindCSS](https://tailwindcss.com) and [TypeScript](https://www.typescriptlang.org) setup.
+A modern, data-driven dashboard application showcasing business analytics for San Francisco.
 
-- ⚡ blazing fast dev server and build
-- 🔗 route management added (`TanStack Router` - File Based routing)
+The data can be filtered and viewed in a variety of ways, most notably by individual district. 
 
-[**Live Demo**](https://vite-react-tailwind-starter.sznm.dev/)
+The data source is updated daily by the City of San Francisco. See https://data.sfgov.org/ for more info. 
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/git?s=https://github.com/agustinusnathaniel/vite-react-tailwind-starter) [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/agustinusnathaniel/vite-react-tailwind-starter)
+## Features
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/agustinusnathaniel/vite-react-tailwind-starter)
+- Data caching for expensive API calls using TanStack Query
+- Interactive business analytics dashboard
+- Modern TypeScript/React architecture
+- Responsive design
+
+## Tech Stack
+
+- React with TypeScript
+- Vite for build tooling
 
 ## Getting Started
 
-You can either click [`Use this template`](https://github.com/agustinusnathaniel/vite-react-tailwind-starter/generate) button on this repository and clone the repo or use npx degit like so:
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Start the development server:
+   ```bash
+   pnpm dev
+   ```
+4. Build for production:
+   ```bash
+   pnpm build
+   ```
 
-```bash
-npx degit agustinusnathaniel/vite-react-tailwind-starter <app_name>
+## Project Structure
+
+```
+src/
+├── lib/           # Core application logic
+├── pages/         # Page components
+├── components/    # Reusable UI components
+└── public/        # Static assets
 ```
 
-```
-pnpm i
-```
+## License
 
-Then, run the development server:
-
-```bash
-pnpm dev
-```
-
-## Deployment
-
-- build command: `pnpm build`
-- output directory: `dist`
-
-### Vercel
-
-- https://vercel.com/docs/frameworks/vite
-
-### Netlify
-
-- https://docs.netlify.com/frameworks/vite/
-
-## References
-
-- [vite](https://vitejs.dev)
-  - [avoid manual import](https://vitejs.dev/guide/features.html#jsx)
-- [TailwindCSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org)
+MIT License - feel free to use this code as a reference or starting point for your own projects.

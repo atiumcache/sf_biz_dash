@@ -1,11 +1,20 @@
-export const getData = async (neighborhood: string): Promise<any[]> => {
-  const data: any[] = []
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query'
+
+export const getData = async (neighborhood: string, currentOnly: boolean): Promise<any[]> => {
+  const data: any[] = [];
   let offset = 0;
   const limit = 1000;
   let hasMoreData = true;
 
   while (hasMoreData){
-    const apiUrl = `${getApiUrl(neighborhood)}&$offset=${offset}&$limit=${limit}`;
+    let apiUrl = `${getApiUrl(neighborhood)}&$offset=${offset}&$limit=${limit}`;
+    if (currentOnly) {
+      apiUrl += '&$where=dba_end_date IS NULL';
+    }
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch data');
@@ -20,6 +29,29 @@ export const getData = async (neighborhood: string): Promise<any[]> => {
     offset += limit;
   }
   return data;
+};
+
+export const useNeighborhoodData = (neighborhood: string, currentOnly: boolean = false) => {
+  return useQuery({
+    queryKey: ['neighborhoodData', neighborhood, currentOnly],
+    queryFn: () => getData(neighborhood, currentOnly),
+    staleTime: 5 * 60 * 1000, // 5 mins
+    gcTime: 10 * 60 * 1000, // 10 mins
+    retry: 3,
+    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000) // exponential backoff
+  })
+}
+
+export const countUniqueNAICs = (data: any[]): number => {
+  const uniqueNAICs = new Set<string>();
+  
+  for (const record of data) {
+    if (record.naic_code) {
+      uniqueNAICs.add(record.naic_code);
+    }
+  }
+  
+  return uniqueNAICs.size;
 };
 
 const getApiUrl = (neighborhood: string): string => {

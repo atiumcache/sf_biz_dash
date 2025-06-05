@@ -22,7 +22,7 @@ import {
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
-import { Link } from "@tanstack/react-router"
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import {
   Sidebar,
   SidebarContent,
@@ -314,7 +314,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <ThemeToggle />
+        <div className='p-0.5'>
+          <SidebarTrigger />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
