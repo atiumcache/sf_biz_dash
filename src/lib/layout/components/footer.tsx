@@ -9,7 +9,7 @@ export const Footer = () => {
             target="_blank"
             rel="noopener noreferrer"
           >
-            agustinusnathaniel.com
+            andrewattilio.com
           </a>
         </p>
       </div>

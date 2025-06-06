@@ -14,7 +14,7 @@ interface TotalCountWidgetProps {
 
 const currentDate: string = new Date().toDateString();
 
-const TotalCountWidget = ({ count }: TotalCountWidgetProps ) => {
+const TotalCountCard = ({ count }: TotalCountWidgetProps ) => {
     return (
         <Card>
             <CardHeader>
@@ -32,4 +32,4 @@ const TotalCountWidget = ({ count }: TotalCountWidgetProps ) => {
     )
 }
 
-export default TotalCountWidget
+export default TotalCountCard
