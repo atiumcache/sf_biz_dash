@@ -128,6 +128,115 @@ class BusinessCollection {
   }
 
   // TODO: Implement methods for Collection analysis
+  countUniqueNAICs(): number {
+    const uniqueNAICs = new Set<string>();
+    for (const business of this.businesses) {
+      if (business.naicCode) {
+        uniqueNAICs.add(business.naicCode.slice(0, 2));
+      }
+    }
+    return uniqueNAICs.size;
+  }
+
+  getActiveBusinesses(): Business[] {
+    return this.businesses.filter(b => b.isActive);
+  }
+
+  getByNAICCode(naicPrefix: string): Business[] {
+    return this.businesses.filter(b => 
+      b.naicCode?.startsWith(naicPrefix)
+    );
+  }
+
+  getBySupervisorDistrict(district: string): Business[] {
+    return this.businesses.filter(b => 
+      b.supervisorDistrict === district
+    );
+  }
+
+  getByBusinessCorridor(corridor: string): Business[] {
+    return this.businesses.filter(b => 
+      b.businessCorridor === corridor
+    );
+  }
+
+  getBusinessesWithTax(taxType: 'parking' | 'transientOccupancy'): Business[] {
+    return this.businesses.filter(b => b.taxes[taxType]);
+  }
+
+  getBusinessesInRadius(centerLat: number, centerLng: number, radiusKm: number): Business[] {
+    return this.businesses.filter(business => {
+      if ((!business.location) || (radiusKm < 0.1)) return false;
+      
+      const distance = this.calculateDistance(
+        centerLat, centerLng,
+        business.location.latitude, business.location.longitude
+      );
+      
+      return distance <= radiusKm;
+    });
+  }
+
+  private calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLng/2) * Math.sin(dLng/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+  }
+
+  // Statistical methods
+  getIndustryBreakdown(): Record<string, number> {
+    const breakdown: Record<string, number> = {};
+    
+    for (const business of this.businesses) {
+      const industry = business.naicDescription || 'Unknown';
+      breakdown[industry] = (breakdown[industry] || 0) + 1;
+    }
+    
+    return breakdown;
+  }
+
+  getDistrictBreakdown(): Record<string, number> {
+    const breakdown: Record<string, number> = {};
+    
+    for (const business of this.businesses) {
+      const district = business.supervisorDistrict;
+      breakdown[district] = (breakdown[district] || 0) + 1;
+    }
+    
+    return breakdown;
+  }
+
+  // Array-like access
+  get all(): readonly Business[] {
+    return this.businesses;
+  }
+
+  get length(): number {
+    return this.businesses.length;
+  }
+
+  get activeCount(): number {
+    return this.getActiveBusinesses().length;
+  }
+
+  // Iterator support
+  *[Symbol.iterator](): Iterator<Business> {
+    yield* this.businesses;
+  }
+
+  // Find methods
+  findById(id: string): Business | undefined {
+    return this.businesses.find(b => b.id === id);
+  }
+
+  findByCertificate(certificateNumber: string): Business | undefined {
+    return this.businesses.find(b => b.certificateNumber === certificateNumber);
+  }
 }
 
 const getData = async (neighborhood: string): Promise<BusinessCollection> => {
@@ -267,4 +376,5 @@ const getApiUrl = (neighborhood: string): string => {
   }
 };
 
-export type { Business, BusinessCollection }
+export type { Business, BusinessRecord }
+export { BusinessCollection }

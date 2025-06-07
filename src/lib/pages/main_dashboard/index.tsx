@@ -1,9 +1,9 @@
-import { useNeighborhoodData, countUniqueNAICs } from './components/getData';
+import { useNeighborhoodData, BusinessCollection } from './components/getData';
 import LoadingSpinner from '../../../components/loading-spinner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TotalCountCard from './components/TotalCountCard';
 import { ChartBarInteractive } from './components/MainChart';
-import { ChartPieDonut } from './components/PieChart'
+import { ChartPieDonut } from './components/PieChart';
 
 const sampleChartData = [
   { date: "2024-04-01", desktop: 600, mobile: 150 },
@@ -99,13 +99,6 @@ const sampleChartData = [
   { date: "2024-06-30", desktop: 446, mobile: 400 },
 ]
 
-interface BusinessData {
-    uniqueid: string;
-    full_business_address: string;
-    neighborhoods_analysis_boundaries: string;
-    naic_code?: string; // Added this since countUniqueNAICs uses it
-}
-
 // Create a client instance
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,7 +113,7 @@ const queryClient = new QueryClient({
 });
 
 const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
-    const { data, isLoading, error } = useNeighborhoodData(neighborhood);
+    const { data: businessCollection, isLoading, error } = useNeighborhoodData(neighborhood);
 
     // Handle loading state
     if (isLoading) {
@@ -140,7 +133,7 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
     }
 
     // Handle empty data
-    if (!data || data.length === 0) {
+    if (!businessCollection || businessCollection.length === 0) {
         return (
             <div className="space-y-4 px-6">
                 <h1 className="text-2xl font-semibold">{neighborhood} Businesses</h1>
@@ -149,23 +142,19 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
         );
     }
 
-    // Count unique NAIC codes
-    const uniqueNAICs = new Set<string>();
-    for (const record of data) {
-        if (record.naic_code) {
-            uniqueNAICs.add(record.naic_code.slice(0, 2));
-        }
-    }
+    // Get businesses and unique NAIC count using BusinessCollection methods
+    const businesses = businessCollection.all;
+    const naicCount = businessCollection.countUniqueNAICs();
 
     return (
         <div className="space-y-4 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-x-4">
             <h1 className="text-2xl font-semibold">{neighborhood} Businesses</h1>
-            <p className="text-gray-600">Total businesses: {data.length}</p>
-            <p className='text-gray-600'>Unique NAIC codes: {countUniqueNAICs(data)}</p>
+            <p className="text-gray-600">Total businesses: {businessCollection.length}</p>
+            <p className='text-gray-600'>Unique NAIC codes: {naicCount}</p>
             <div className='col-span-1 md:col-span-2 lg:col-span-3'>
-                <ChartBarInteractive chartData={ sampleChartData }/>
+                <ChartBarInteractive chartData={sampleChartData} />
             </div>
-            <TotalCountCard count={data.length} />
+            <TotalCountCard count={businessCollection.length} />
             <ChartPieDonut />
         </div>
     );
