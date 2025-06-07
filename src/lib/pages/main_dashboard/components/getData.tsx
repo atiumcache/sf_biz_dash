@@ -4,7 +4,133 @@ import {
   useQuery,
 } from '@tanstack/react-query'
 
-const getData = async (neighborhood: string): Promise<any[]> => {
+// Raw API response interface
+interface BusinessRecord {
+  uniqueid: string;
+  ttxid: string;
+  certificate_number: string;
+  ownership_name: string;
+  dba_name: string;
+  full_business_address: string;
+  city: string;
+  state: string;
+  business_zip: string;
+  dba_start_date?: string;
+  dba_end_date?: string;
+  location_start_date?: string;
+  location_end_date?: string;
+  mailing_address_1?: string;
+  mail_city?: string;
+  mail_zipcode?: string;
+  mail_state?: string;
+  naic_code?: string;
+  naic_code_description?: string;
+  naics_code_descriptions_list?: string;
+  parking_tax: boolean;
+  transient_occupancy_tax: boolean;
+  supervisor_district: string;
+  neighborhoods_analysis_boundaries: string;
+  business_corridor?: string;
+  location?: {
+    type: string;
+    coordinates: [number, number]; // [longitude, latitude]
+  };
+  data_as_of: string;
+  data_loaded_at: string;
+}
+
+// Clean domain model
+interface Business {
+  id: string;
+  certificateNumber: string;
+  ownershipName: string;
+  dbaName: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  mailingAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  dates: {
+    dbaStart?: Date;
+    dbaEnd?: Date;
+    locationStart?: Date;
+    locationEnd?: Date;
+  };
+  naicCode?: string;
+  naicDescription?: string;
+  taxes: {
+    parking: boolean;
+    transientOccupancy: boolean;
+  };
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
+  supervisorDistrict: string;
+  neighborhood: string;
+  businessCorridor?: string;
+  isActive: boolean;
+}
+
+class BusinessCollection {
+  private businesses: Business[];
+
+  constructor(rawData: BusinessRecord[]) {
+    this.businesses = rawData.map(this.transformRecord)
+  }
+
+  private transformRecord(record: BusinessRecord): Business {
+    return {
+      id: record.uniqueid,
+      certificateNumber: record.certificate_number,
+      ownershipName: record.ownership_name,
+      dbaName: record.dba_name,
+      address: {
+        street: record.full_business_address,
+        city: record.city,
+        state: record.state,
+        zip: record.business_zip,
+      },
+      mailingAddress: record.mailing_address_1 ? {
+        street: record.mailing_address_1,
+        city: record.mail_city || '',
+        state: record.mail_state || '',
+        zip: record.mail_zipcode || '',
+      } : undefined,
+      dates: {
+        dbaStart: record.dba_start_date ? new Date(record.dba_start_date) : undefined,
+        dbaEnd: record.dba_end_date ? new Date(record.dba_end_date) : undefined,
+        locationStart: record.location_start_date ? new Date(record.location_start_date) : undefined,
+        locationEnd: record.location_end_date ? new Date(record.location_end_date) : undefined,
+      },
+      naicCode: record.naic_code,
+      naicDescription: record.naic_code_description,
+      taxes: {
+        parking: record.parking_tax,
+        transientOccupancy: record.transient_occupancy_tax,
+      },
+      location: record.location ? {
+        longitude: record.location.coordinates[0],
+        latitude: record.location.coordinates[1],
+      } : undefined,
+      supervisorDistrict: record.supervisor_district,
+      neighborhood: record.neighborhoods_analysis_boundaries,
+      businessCorridor: record.business_corridor,
+      isActive: !record.dba_end_date && !record.location_end_date,
+    };
+  }
+
+  // TODO: Implement methods for Collection analysis
+}
+
+const getData = async (neighborhood: string): Promise<BusinessCollection> => {
   const data: any[] = [];
   let offset = 0;
   const limit = 1000;
@@ -25,7 +151,7 @@ const getData = async (neighborhood: string): Promise<any[]> => {
     }
     offset += limit;
   }
-  return data;
+  return new BusinessCollection(data);
 };
 
 export const useNeighborhoodData = (neighborhood: string) => {
@@ -140,3 +266,5 @@ const getApiUrl = (neighborhood: string): string => {
       throw new Error('Invalid neighborhood');
   }
 };
+
+export type { Business, BusinessCollection }
