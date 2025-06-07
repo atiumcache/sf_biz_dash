@@ -30,44 +30,40 @@ interface MainChartProps {
 }
 
 
-
 const chartConfig = {
-  views: {
-    label: "Page Views",
-  },
-  desktop: {
-    label: "Opening",
-    color: "var(--chart-2)",
-  },
-  mobile: {
-    label: "Closed",
+  new_biz: {
+    label: "Openings",
     color: "var(--chart-1)",
+  },
+  closed_biz: {
+    label: "Closures",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig
 
-export function ChartBarInteractive({ chartData }) {
+export function ChartBarInteractive({ chartData }: MainChartProps) {
   const [activeChart, setActiveChart] =
-    React.useState<keyof typeof chartConfig>("desktop")
+    React.useState<keyof typeof chartConfig>("new_biz")
 
   const total = React.useMemo(
     () => ({
-      desktop: chartData.reduce((acc, curr) => acc + curr.desktop, 0),
-      mobile: chartData.reduce((acc, curr) => acc + curr.mobile, 0),
+      new_biz: chartData.reduce((acc, curr) => acc + curr.new_biz, 0),
+      closed_biz: chartData.reduce((acc, curr) => acc + curr.closed_biz, 0),
     }),
-    []
+    [chartData]
   )
 
   return (
     <Card className="py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pt-4 pb-3 sm:!py-0">
-          <CardTitle>Opening and Closing Rates</CardTitle>
+          <CardTitle>Opening and Closing Counts for Past 12 Months</CardTitle>
           <CardDescription>
-            Showing newly-opened and closed businesses for the last 6 months
+            Showing total business openings and closures for the past year
           </CardDescription>
         </div>
         <div className="flex">
-          {["desktop", "mobile"].map((key) => {
+          {["new_biz", "closed_biz"].map((key) => {
             const chart = key as keyof typeof chartConfig
             return (
               <button
@@ -111,7 +107,7 @@ export function ChartBarInteractive({ chartData }) {
                 const date = new Date(value)
                 return date.toLocaleDateString("en-US", {
                   month: "short",
-                  day: "numeric",
+                  year: "numeric"
                 })
               }}
             />
@@ -123,7 +119,6 @@ export function ChartBarInteractive({ chartData }) {
                   labelFormatter={(value) => {
                     return new Date(value).toLocaleDateString("en-US", {
                       month: "short",
-                      day: "numeric",
                       year: "numeric",
                     })
                   }}

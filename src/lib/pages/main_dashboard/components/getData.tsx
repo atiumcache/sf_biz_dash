@@ -79,6 +79,12 @@ interface Business {
   isActive: boolean;
 }
 
+interface ChartData {
+  date: string;
+  new_biz: number;
+  closed_biz: number;
+}
+
 class BusinessCollection {
   private businesses: Business[];
 
@@ -237,6 +243,56 @@ class BusinessCollection {
   findByCertificate(certificateNumber: string): Business | undefined {
     return this.businesses.find(b => b.certificateNumber === certificateNumber);
   }
+
+  // Find businesses opened in a specific month and year
+  countBusinessesOpenedInMonth(year: number, month: number): number {
+    return this.businesses.filter(business => {
+      if (!business.dates.dbaStart) return false;
+      const businessMonth = business.dates.dbaStart.getMonth() + 1; // getMonth() returns 0-11
+      const businessYear = business.dates.dbaStart.getFullYear();
+      return businessYear === year && businessMonth === month;
+    }).length;
+  }
+
+  // Find businesses closed in a specific month and year
+  countBusinessesClosedInMonth(year: number, month: number): number {
+    return this.businesses.filter(business => {
+      if (!business.dates.dbaEnd) return false;
+      const businessMonth = business.dates.dbaEnd.getMonth() + 1;
+      const businessYear = business.dates.dbaEnd.getFullYear();
+      return businessYear === year && businessMonth === month;
+    }).length;
+  }
+
+  // Get chart data for the past 12 months
+  getMonthlyBusinessActivity(): ChartData[] {
+    const now = new Date();
+    const data: ChartData[] = [];
+
+    // Generate data for the past 12 months
+    for (let i = 0; i < 12; i++) {
+      const date = new Date(now);
+      date.setMonth(now.getMonth() - i); // Go back i months
+      
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1; // getMonth() returns 0-11
+      
+      // Format date as "YYYY-MM"
+      const formattedDate = `${year}-${month.toString().padStart(2, '0')}`;
+      
+      const newBiz = this.countBusinessesOpenedInMonth(year, month);
+      const closedBiz = this.countBusinessesClosedInMonth(year, month);
+      
+      data.push({
+        date: formattedDate,
+        new_biz: newBiz,
+        closed_biz: closedBiz
+      });
+    }
+
+    // Sort data from oldest to newest
+    return data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }
 }
 
 const getData = async (neighborhood: string): Promise<BusinessCollection> => {
@@ -376,5 +432,5 @@ const getApiUrl = (neighborhood: string): string => {
   }
 };
 
-export type { Business, BusinessRecord }
+export type { Business, BusinessRecord, ChartData }
 export { BusinessCollection }
