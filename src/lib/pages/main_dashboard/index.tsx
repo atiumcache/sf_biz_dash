@@ -1,4 +1,4 @@
-import { useNeighborhoodData } from './components/getData';
+import { useNeighborhoodData, countUniqueNAICs } from './components/getData';
 import LoadingSpinner from '../../../components/loading-spinner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TotalCountCard from './components/TotalCountCard';
@@ -120,7 +120,7 @@ const queryClient = new QueryClient({
 });
 
 const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
-    const { data, isLoading, error } = useNeighborhoodData(neighborhood, true);
+    const { data, isLoading, error } = useNeighborhoodData(neighborhood);
 
     // Handle loading state
     if (isLoading) {
@@ -153,7 +153,7 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
     const uniqueNAICs = new Set<string>();
     for (const record of data) {
         if (record.naic_code) {
-            uniqueNAICs.add(record.naic_code);
+            uniqueNAICs.add(record.naic_code.slice(0, 2));
         }
     }
 
@@ -161,7 +161,7 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
         <div className="space-y-4 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-x-4">
             <h1 className="text-2xl font-semibold">{neighborhood} Businesses</h1>
             <p className="text-gray-600">Total businesses: {data.length}</p>
-            <p className='text-gray-600'>Unique NAIC codes: {uniqueNAICs.size}</p>
+            <p className='text-gray-600'>Unique NAIC codes: {countUniqueNAICs(data)}</p>
             <div className='col-span-1 md:col-span-2 lg:col-span-3'>
                 <ChartBarInteractive chartData={ sampleChartData }/>
             </div>

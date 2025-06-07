@@ -5,7 +5,7 @@ export const Footer = () => {
         <p className="text-xs">
           {new Date().getFullYear()} -{' '}
           <a
-            href="https://agustinusnathaniel.com"
+            href="https://andrewattilio.com"
             target="_blank"
             rel="noopener noreferrer"
           >

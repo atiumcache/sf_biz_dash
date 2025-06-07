@@ -4,7 +4,7 @@ import {
   useQuery,
 } from '@tanstack/react-query'
 
-export const getData = async (neighborhood: string, currentOnly: boolean): Promise<any[]> => {
+const getData = async (neighborhood: string): Promise<any[]> => {
   const data: any[] = [];
   let offset = 0;
   const limit = 1000;
@@ -12,9 +12,6 @@ export const getData = async (neighborhood: string, currentOnly: boolean): Promi
 
   while (hasMoreData){
     let apiUrl = `${getApiUrl(neighborhood)}&$offset=${offset}&$limit=${limit}`;
-    if (currentOnly) {
-      apiUrl += '&$where=dba_end_date IS NULL';
-    }
     const response = await fetch(apiUrl);
     if (!response.ok) {
       throw new Error('Failed to fetch data');
@@ -31,10 +28,10 @@ export const getData = async (neighborhood: string, currentOnly: boolean): Promi
   return data;
 };
 
-export const useNeighborhoodData = (neighborhood: string, currentOnly: boolean = false) => {
+export const useNeighborhoodData = (neighborhood: string) => {
   return useQuery({
-    queryKey: ['neighborhoodData', neighborhood, currentOnly],
-    queryFn: () => getData(neighborhood, currentOnly),
+    queryKey: ['neighborhoodData', neighborhood],
+    queryFn: () => getData(neighborhood),
     staleTime: 5 * 60 * 1000, // 5 mins
     gcTime: 10 * 60 * 1000, // 10 mins
     retry: 3,
@@ -43,11 +40,12 @@ export const useNeighborhoodData = (neighborhood: string, currentOnly: boolean =
 }
 
 export const countUniqueNAICs = (data: any[]): number => {
+  // Return number of unique first 2 digit sequences for NAIC codes
   const uniqueNAICs = new Set<string>();
   
   for (const record of data) {
     if (record.naic_code) {
-      uniqueNAICs.add(record.naic_code);
+      uniqueNAICs.add(record.naic_code.slice(0, 2));
     }
   }
   
