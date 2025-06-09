@@ -1,6 +1,6 @@
-"use client"
+'use client';
 
-import { Pie, PieChart } from "recharts"
+import { Pie, PieChart } from 'recharts';
 
 import {
   Card,
@@ -8,30 +8,30 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from '@/components/ui/chart';
 
-import type { ChartConfig } from "@/components/ui/chart"
+import type { ChartConfig } from '@/components/ui/chart';
 
-export const description = "A donut chart"
+export const description = 'A donut chart';
 
 interface ChartPieDonutProps {
   chartConfig: ChartConfig;
 }
 
 export function ChartPieDonut({ chartConfig }: ChartPieDonutProps) {
-  const currentMonth = (new Date()).toDateString()
+  const currentMonth = new Date().toDateString();
 
   // Convert ChartConfig to pie chart data format
   const chartData = Object.entries(chartConfig).map(([industry, config]) => ({
     name: industry,
     value: config.count,
     fill: config.color,
-  }))
+  }));
 
   return (
     <Card className="flex flex-col">
@@ -59,5 +59,5 @@ export function ChartPieDonut({ chartConfig }: ChartPieDonutProps) {
         </ChartContainer>
       </CardContent>
     </Card>
-  )
+  );
 }

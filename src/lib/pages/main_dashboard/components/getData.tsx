@@ -1,7 +1,5 @@
 import type { ChartConfig } from '@/components/ui/chart';
-import {
-  useQuery
-} from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query';
 
 // Raw API response interface
 interface BusinessRecord {
@@ -88,7 +86,7 @@ class BusinessCollection {
   private businesses: Business[];
 
   constructor(rawData: BusinessRecord[]) {
-    this.businesses = rawData.map(this.transformRecord)
+    this.businesses = rawData.map(this.transformRecord);
   }
 
   private transformRecord(record: BusinessRecord): Business {
@@ -103,17 +101,25 @@ class BusinessCollection {
         state: record.state,
         zip: record.business_zip,
       },
-      mailingAddress: record.mailing_address_1 ? {
-        street: record.mailing_address_1,
-        city: record.mail_city || '',
-        state: record.mail_state || '',
-        zip: record.mail_zipcode || '',
-      } : undefined,
+      mailingAddress: record.mailing_address_1
+        ? {
+            street: record.mailing_address_1,
+            city: record.mail_city || '',
+            state: record.mail_state || '',
+            zip: record.mail_zipcode || '',
+          }
+        : undefined,
       dates: {
-        dbaStart: record.dba_start_date ? new Date(record.dba_start_date) : undefined,
+        dbaStart: record.dba_start_date
+          ? new Date(record.dba_start_date)
+          : undefined,
         dbaEnd: record.dba_end_date ? new Date(record.dba_end_date) : undefined,
-        locationStart: record.location_start_date ? new Date(record.location_start_date) : undefined,
-        locationEnd: record.location_end_date ? new Date(record.location_end_date) : undefined,
+        locationStart: record.location_start_date
+          ? new Date(record.location_start_date)
+          : undefined,
+        locationEnd: record.location_end_date
+          ? new Date(record.location_end_date)
+          : undefined,
       },
       naicCode: record.naic_code,
       naicDescription: record.naic_code_description,
@@ -121,10 +127,12 @@ class BusinessCollection {
         parking: record.parking_tax,
         transientOccupancy: record.transient_occupancy_tax,
       },
-      location: record.location ? {
-        longitude: record.location.coordinates[0],
-        latitude: record.location.coordinates[1],
-      } : undefined,
+      location: record.location
+        ? {
+            longitude: record.location.coordinates[0],
+            latitude: record.location.coordinates[1],
+          }
+        : undefined,
       supervisorDistrict: record.supervisor_district,
       neighborhood: record.neighborhoods_analysis_boundaries,
       businessCorridor: record.business_corridor,
@@ -143,52 +151,60 @@ class BusinessCollection {
   }
 
   getActiveBusinesses(): Business[] {
-    return this.businesses.filter(b => b.isActive);
+    return this.businesses.filter((b) => b.isActive);
   }
 
   getByNAICCode(naicPrefix: string): Business[] {
-    return this.businesses.filter(b => 
-      b.naicCode?.startsWith(naicPrefix)
-    );
+    return this.businesses.filter((b) => b.naicCode?.startsWith(naicPrefix));
   }
 
   getBySupervisorDistrict(district: string): Business[] {
-    return this.businesses.filter(b => 
-      b.supervisorDistrict === district
-    );
+    return this.businesses.filter((b) => b.supervisorDistrict === district);
   }
 
   getByBusinessCorridor(corridor: string): Business[] {
-    return this.businesses.filter(b => 
-      b.businessCorridor === corridor
-    );
+    return this.businesses.filter((b) => b.businessCorridor === corridor);
   }
 
   getBusinessesWithTax(taxType: 'parking' | 'transientOccupancy'): Business[] {
-    return this.businesses.filter(b => b.taxes[taxType]);
+    return this.businesses.filter((b) => b.taxes[taxType]);
   }
 
-  getBusinessesInRadius(centerLat: number, centerLng: number, radiusKm: number): Business[] {
-    return this.businesses.filter(business => {
-      if ((!business.location) || (radiusKm < 0.1)) return false;
-      
+  getBusinessesInRadius(
+    centerLat: number,
+    centerLng: number,
+    radiusKm: number,
+  ): Business[] {
+    return this.businesses.filter((business) => {
+      if (!business.location || radiusKm < 0.1) return false;
+
       const distance = this.calculateDistance(
-        centerLat, centerLng,
-        business.location.latitude, business.location.longitude
+        centerLat,
+        centerLng,
+        business.location.latitude,
+        business.location.longitude,
       );
-      
+
       return distance <= radiusKm;
     });
   }
 
-  private calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  private calculateDistance(
+    lat1: number,
+    lng1: number,
+    lat2: number,
+    lng2: number,
+  ): number {
     const R = 6371; // Earth's radius in km
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLng / 2) *
+        Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
 
@@ -218,13 +234,13 @@ class BusinessCollection {
     '72': 'Accommodation and Food Services',
     '81': 'Other Services (except Public Administration)',
     '92': 'Public Administration',
-    '99': 'Unclassified Establishments'
+    '99': 'Unclassified Establishments',
   };
 
   // Statistical methods
   getIndustryBreakdown(): Record<string, number> {
     const breakdown: Record<string, number> = {};
-    
+
     for (const business of this.businesses) {
       const naicCode = business.naicCode;
       if (naicCode) {
@@ -235,26 +251,28 @@ class BusinessCollection {
         breakdown['Unknown'] = (breakdown['Unknown'] || 0) + 1;
       }
     }
-    
+
     return breakdown;
   }
 
   getDistrictBreakdown(): Record<string, number> {
     const breakdown: Record<string, number> = {};
-    
+
     for (const business of this.businesses) {
       const district = business.supervisorDistrict;
       breakdown[district] = (breakdown[district] || 0) + 1;
     }
-    
+
     return breakdown;
   }
 
   // Add this method to the BusinessCollection class
   getTopIndustries(): ChartConfig {
     // Filter out businesses without NAIC codes
-    const naicBusinesses = this.getActiveBusinesses().filter(business => business.naicCode);
-    
+    const naicBusinesses = this.getActiveBusinesses().filter(
+      (business) => business.naicCode,
+    );
+
     const breakdown: Record<string, number> = {};
     for (const business of naicBusinesses) {
       const prefix = business.naicCode!.slice(0, 2);
@@ -275,13 +293,16 @@ class BusinessCollection {
         entry[0],
         {
           label: entry[0],
-          color: `var(--chart-${index + 1})`
-        }
+          color: `var(--chart-${index + 1})`,
+        },
       ]),
-      ['other', {
-        label: 'Other',
-        color: 'var(--chart-6)'
-      }]
+      [
+        'other',
+        {
+          label: 'Other',
+          color: 'var(--chart-6)',
+        },
+      ],
     ]);
 
     // Add the counts to the config
@@ -313,16 +334,18 @@ class BusinessCollection {
 
   // Find methods
   findById(id: string): Business | undefined {
-    return this.businesses.find(b => b.id === id);
+    return this.businesses.find((b) => b.id === id);
   }
 
   findByCertificate(certificateNumber: string): Business | undefined {
-    return this.businesses.find(b => b.certificateNumber === certificateNumber);
+    return this.businesses.find(
+      (b) => b.certificateNumber === certificateNumber,
+    );
   }
 
   // Find businesses opened in a specific month and year
   countBusinessesOpenedInMonth(year: number, month: number): number {
-    return this.businesses.filter(business => {
+    return this.businesses.filter((business) => {
       if (!business.dates.dbaStart) return false;
       const businessMonth = business.dates.dbaStart.getMonth() + 1; // getMonth() returns 0-11
       const businessYear = business.dates.dbaStart.getFullYear();
@@ -332,7 +355,7 @@ class BusinessCollection {
 
   // Find businesses closed in a specific month and year
   countBusinessesClosedInMonth(year: number, month: number): number {
-    return this.businesses.filter(business => {
+    return this.businesses.filter((business) => {
       if (!business.dates.dbaEnd) return false;
       const businessMonth = business.dates.dbaEnd.getMonth() + 1;
       const businessYear = business.dates.dbaEnd.getFullYear();
@@ -349,25 +372,27 @@ class BusinessCollection {
     for (let i = 0; i < 12; i++) {
       const date = new Date(now);
       date.setMonth(now.getMonth() - i); // Go back i months
-      
+
       const year = date.getFullYear();
       const month = date.getMonth() + 1; // getMonth() returns 0-11
-      
+
       // Format date as "YYYY-MM"
       const formattedDate = `${year}-${month.toString().padStart(2, '0')}`;
-      
+
       const newBiz = this.countBusinessesOpenedInMonth(year, month);
       const closedBiz = this.countBusinessesClosedInMonth(year, month);
-      
+
       data.push({
         date: formattedDate,
         new_biz: newBiz,
-        closed_biz: closedBiz
+        closed_biz: closedBiz,
       });
     }
 
     // Sort data from oldest to newest
-    return data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    return data.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
   }
 }
 
@@ -377,7 +402,7 @@ const getData = async (neighborhood: string): Promise<BusinessCollection> => {
   const limit = 1000;
   let hasMoreData = true;
 
-  while (hasMoreData){
+  while (hasMoreData) {
     let apiUrl = `${getApiUrl(neighborhood)}&$offset=${offset}&$limit=${limit}`;
     const response = await fetch(apiUrl);
     if (!response.ok) {
@@ -402,20 +427,20 @@ export const useNeighborhoodData = (neighborhood: string) => {
     staleTime: 5 * 60 * 1000, // 5 mins
     gcTime: 10 * 60 * 1000, // 10 mins
     retry: 3,
-    retryDelay: attemptIndex => Math.min(1000 * 2 ** attemptIndex, 30000) // exponential backoff
-  })
-}
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // exponential backoff
+  });
+};
 
 export const countUniqueNAICs = (data: any[]): number => {
   // Return number of unique first 2 digit sequences for NAIC codes
   const uniqueNAICs = new Set<string>();
-  
+
   for (const record of data) {
     if (record.naic_code) {
       uniqueNAICs.add(record.naic_code.slice(0, 2));
     }
   }
-  
+
   return uniqueNAICs.size;
 };
 
@@ -508,5 +533,5 @@ const getApiUrl = (neighborhood: string): string => {
   }
 };
 
-export type { Business, BusinessRecord, ChartData }
-export { BusinessCollection }
+export type { Business, BusinessRecord, ChartData };
+export { BusinessCollection };

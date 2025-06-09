@@ -16,11 +16,9 @@ export const Header = () => {
 export const MobileHeader = () => {
   return (
     <div className="p-2 md:hidden sticky w-full flex justify-between">
-      <SidebarTrigger
-        className="bg-base-100/80 text-base-content hover:bg-base-200/80"
-      />
-      <h1 className='text-xl px-2'>SF.gov BizDash</h1>
+      <SidebarTrigger className="bg-base-100/80 text-base-content hover:bg-base-200/80" />
+      <h1 className="text-xl px-2">SF.gov BizDash</h1>
       <ThemeToggle />
     </div>
-  )
-}
+  );
+};

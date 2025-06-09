@@ -38,7 +38,7 @@ export default defineConfig({
     checker({
       typescript: true,
       biome: true,
-      overlay: false
+      overlay: false,
     }),
     VitePWA(pwaOptions),
   ],
