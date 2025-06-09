@@ -1,3 +1,4 @@
+import type { ChartConfig } from '@/components/ui/chart';
 import {
   QueryClient,
   QueryClientProvider,
@@ -85,6 +86,16 @@ interface ChartData {
   closed_biz: number;
 }
 
+interface ChartConfig {
+  [key: string]: {
+    label?: React.ReactNode;
+    icon?: React.ComponentType<{}>;
+    color?: string;
+    theme?: Record<"light" | "dark", string>;
+    count: number;
+  };
+}
+
 class BusinessCollection {
   private businesses: Business[];
 
@@ -133,7 +144,6 @@ class BusinessCollection {
     };
   }
 
-  // TODO: Implement methods for Collection analysis
   countUniqueNAICs(): number {
     const uniqueNAICs = new Set<string>();
     for (const business of this.businesses) {
@@ -194,13 +204,48 @@ class BusinessCollection {
     return R * c;
   }
 
+  // NAIC code prefix to industry name mapping
+  private static NAIC_CODE_MAP: Record<string, string> = {
+    '11': 'Agriculture, Forestry, Fishing, and Hunting',
+    '21': 'Mining, Quarrying, and Oil and Gas Extraction',
+    '22': 'Utilities',
+    '23': 'Construction',
+    '31': 'Manufacturing',
+    '32': 'Manufacturing',
+    '33': 'Manufacturing',
+    '42': 'Wholesale Trade',
+    '44': 'Retail Trade',
+    '45': 'Retail Trade',
+    '48': 'Transportation and Warehousing',
+    '49': 'Transportation and Warehousing',
+    '51': 'Information',
+    '52': 'Finance and Insurance',
+    '53': 'Real Estate and Rental and Leasing',
+    '54': 'Professional, Scientific, and Technical Services',
+    '55': 'Management of Companies and Enterprises',
+    '56': 'Administrative and Support and Waste Management and Remediation Services',
+    '61': 'Educational Services',
+    '62': 'Health Care and Social Assistance',
+    '71': 'Arts, Entertainment, and Recreation',
+    '72': 'Accommodation and Food Services',
+    '81': 'Other Services (except Public Administration)',
+    '92': 'Public Administration',
+    '99': 'Unclassified Establishments'
+  };
+
   // Statistical methods
   getIndustryBreakdown(): Record<string, number> {
     const breakdown: Record<string, number> = {};
     
     for (const business of this.businesses) {
-      const industry = business.naicDescription || 'Unknown';
-      breakdown[industry] = (breakdown[industry] || 0) + 1;
+      const naicCode = business.naicCode;
+      if (naicCode) {
+        const prefix = naicCode.slice(0, 2);
+        const industry = BusinessCollection.NAIC_CODE_MAP[prefix] || 'Other';
+        breakdown[industry] = (breakdown[industry] || 0) + 1;
+      } else {
+        breakdown['Unknown'] = (breakdown['Unknown'] || 0) + 1;
+      }
     }
     
     return breakdown;
@@ -215,6 +260,49 @@ class BusinessCollection {
     }
     
     return breakdown;
+  }
+
+  // Add this method to the BusinessCollection class
+  getTopIndustries(): ChartConfig {
+    // Filter out businesses without NAIC codes
+    const naicBusinesses = this.getActiveBusinesses().filter(business => business.naicCode);
+    
+    const breakdown: Record<string, number> = {};
+    for (const business of naicBusinesses) {
+      const prefix = business.naicCode!.slice(0, 2);
+      const industry = BusinessCollection.NAIC_CODE_MAP[prefix] || 'Other';
+      breakdown[industry] = (breakdown[industry] || 0) + 1;
+    }
+
+    const top5 = Object.entries(breakdown)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5);
+
+    const otherCount = Object.entries(breakdown)
+      .slice(5)
+      .reduce((sum, [, count]) => sum + count, 0);
+
+    const config: ChartConfig = Object.fromEntries([
+      ...top5.map((entry, index) => [
+        entry[0],
+        {
+          label: entry[0],
+          color: `var(--chart-${index + 1})`
+        }
+      ]),
+      ['other', {
+        label: 'Other',
+        color: 'var(--chart-6)'
+      }]
+    ]);
+
+    // Add the counts to the config
+    top5.forEach(([code, count]) => {
+      config[code].count = count;
+    });
+    config['other'].count = otherCount;
+
+    return config;
   }
 
   // Array-like access

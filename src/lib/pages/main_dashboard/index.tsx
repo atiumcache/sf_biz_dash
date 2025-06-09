@@ -64,7 +64,7 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
                 <ChartBarInteractive chartData={openCloseChartData} />
             </div>
             <TotalCountCard count={businessCollection.activeCount} />
-            <ChartPieDonut />
+            <ChartPieDonut chartConfig={businessCollection.getTopIndustries()} />
         </div>
     );
 };

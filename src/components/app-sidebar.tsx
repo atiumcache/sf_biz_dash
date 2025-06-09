@@ -31,12 +31,11 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
   user: {
     name: "Jane Doe",
     email: "jane.doe@sf.gov",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/avatars/demo.jpg",
   },
   teams: [
     {
