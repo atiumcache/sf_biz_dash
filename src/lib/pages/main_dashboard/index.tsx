@@ -1,4 +1,4 @@
-import { useNeighborhoodData, BusinessCollection } from './components/getData';
+import { useNeighborhoodData } from './components/getData';
 import LoadingSpinner from '../../../components/loading-spinner';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TotalCountCard from './components/TotalCountCard';

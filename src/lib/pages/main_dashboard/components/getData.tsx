@@ -1,8 +1,6 @@
 import type { ChartConfig } from '@/components/ui/chart';
 import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
+  useQuery
 } from '@tanstack/react-query'
 
 // Raw API response interface
