@@ -55,10 +55,12 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
     const openCloseChartData = businessCollection.getMonthlyBusinessActivity()
 
     return (
-        <div className="space-y-4 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-x-4 pt-6">
+        <div className="space-y-2 space-x-2 md:space-y-4 md:space-x-4 px-4 md:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-6">
             <div className='flex justify-between w-full col-span-1 md:col-span-2 lg:col-span-3' >
                 <h1 className="text-3xl font-semibold">{neighborhood} Businesses</h1>
-                <ThemeToggle />
+                <div className='hidden md:block'>
+                    <ThemeToggle />
+                </div>
             </div>
             <div className='col-span-1 md:col-span-2 lg:col-span-3'>
                 <ChartBarInteractive chartData={openCloseChartData} />

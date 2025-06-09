@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { ThemeProvider } from '@/lib/components/theme-provider';
 
 import { Footer } from './components/footer';
+import { MobileHeader } from './components/header'
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from "@/components/app-sidebar";
 
@@ -17,6 +18,7 @@ export const Layout = ({ children }: LayoutProps) => {
         <div className="flex min-h-screen w-full">
           <AppSidebar />
           <div className="flex flex-col flex-1 w-full">
+            <MobileHeader />
             <main className="flex-1 w-full">
               {children}
             </main>
