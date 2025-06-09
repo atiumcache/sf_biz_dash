@@ -18,11 +18,11 @@ const TotalCountCard = ({ count }: TotalCountWidgetProps ) => {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card Description</CardDescription>
+                <CardTitle>Active Businesses</CardTitle>
+                <CardDescription>Currently active business establishments in this neighborhood</CardDescription>
             </CardHeader>
             <CardContent>
-                <h2>{count}</h2>
+                <h2 className='text-5xl'>{count}</h2>
                 <h3>active businesses</h3>
             </CardContent>
             <CardFooter>

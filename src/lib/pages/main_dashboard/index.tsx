@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import TotalCountCard from './components/TotalCountCard';
 import { ChartBarInteractive } from './components/MainChart';
 import { ChartPieDonut } from './components/PieChart';
+import { ThemeToggle } from '@/lib/components/theme-toggle';
 
 
 
@@ -51,15 +52,14 @@ const DashboardContent = ({ neighborhood }: { neighborhood: string }) => {
     }
 
     // Get businesses and unique NAIC count using BusinessCollection methods
-    const businesses = businessCollection.all;
-    const naicCount = businessCollection.countUniqueNAICs();
     const openCloseChartData = businessCollection.getMonthlyBusinessActivity()
 
     return (
-        <div className="space-y-4 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-x-4">
-            <h1 className="text-2xl font-semibold">{neighborhood} Businesses</h1>
-            <p className="text-gray-600">Total number of records: {businessCollection.length}</p>
-            <p className='text-gray-600'>Time to fetch data: {}</p>
+        <div className="space-y-4 px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 space-x-4 pt-6">
+            <div className='flex justify-between w-full col-span-1 md:col-span-2 lg:col-span-3' >
+                <h1 className="text-3xl font-semibold">{neighborhood} Businesses</h1>
+                <ThemeToggle />
+            </div>
             <div className='col-span-1 md:col-span-2 lg:col-span-3'>
                 <ChartBarInteractive chartData={openCloseChartData} />
             </div>
