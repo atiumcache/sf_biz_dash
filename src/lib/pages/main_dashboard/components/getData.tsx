@@ -86,15 +86,7 @@ interface ChartData {
   closed_biz: number;
 }
 
-interface ChartConfig {
-  [key: string]: {
-    label?: React.ReactNode;
-    icon?: React.ComponentType<{}>;
-    color?: string;
-    theme?: Record<"light" | "dark", string>;
-    count: number;
-  };
-}
+
 
 class BusinessCollection {
   private businesses: Business[];
