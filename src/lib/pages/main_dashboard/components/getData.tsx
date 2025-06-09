@@ -86,8 +86,6 @@ interface ChartData {
   closed_biz: number;
 }
 
-
-
 class BusinessCollection {
   private businesses: Business[];
 

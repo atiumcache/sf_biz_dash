@@ -10,12 +10,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import {
-  type ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart"
+import type { ChartConfig } from "@/components/ui/chart"
+import { ChartContainer } from "@/components/ui/chart"
+import { ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 
 export const description = "An interactive bar chart"
 
@@ -34,10 +31,12 @@ const chartConfig = {
   new_biz: {
     label: "Openings",
     color: "var(--chart-1)",
+    count: 0,
   },
   closed_biz: {
     label: "Closures",
     color: "var(--chart-2)",
+    count: 0,
   },
 } satisfies ChartConfig
 
@@ -114,14 +113,7 @@ export function ChartBarInteractive({ chartData }: MainChartProps) {
             <ChartTooltip
               content={
                 <ChartTooltipContent
-                  className="w-[150px]"
-                  nameKey="views"
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      year: "numeric",
-                    })
-                  }}
+                  formatter={(value) => value.toLocaleString()}
                 />
               }
             />
