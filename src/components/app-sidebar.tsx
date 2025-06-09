@@ -220,7 +220,7 @@ const data = {
         },
         {
           title: "Sunset/Parkside",
-          url: "/main-dashboard/Sunset/Parkside",
+          url: "/main-dashboard/Sunset",
         },
         {
           title: "West of Twin Peaks",

@@ -19,8 +19,6 @@ import type { ChartConfig } from "@/components/ui/chart"
 
 export const description = "A donut chart"
 
-const currentMonth = (new Date()).toDateString()
-
 interface ChartPieDonutProps {
   chartConfig: ChartConfig;
 }

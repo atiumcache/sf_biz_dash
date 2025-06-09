@@ -461,7 +461,7 @@ const getApiUrl = (neighborhood: string): string => {
       return 'https://data.sfgov.org/resource/g8m3-pdis.json?neighborhoods_analysis_boundaries=Outer%20Richmond';
     case 'Outer Mission':
       return 'https://data.sfgov.org/resource/g8m3-pdis.json?neighborhoods_analysis_boundaries=Outer%20Mission';
-    case 'Sunset/Parkside':
+    case 'Sunset':
       return 'https://data.sfgov.org/resource/g8m3-pdis.json?neighborhoods_analysis_boundaries=Sunset%2FParkside';
     case 'OMI':
       return 'https://data.sfgov.org/resource/g8m3-pdis.json?neighborhoods_analysis_boundaries=Oceanview%2FMerced%2FIngleside';
